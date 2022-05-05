@@ -50,17 +50,17 @@ def main():
     outs = ''
     a = True
     
-    model = Model(rf"{os.getcwd()}\a508158169484236aca04d7a668ec96f.ONNX\model.onnx")
+    model = Model(rf"{os.getcwd()}\490fadb34c604b9089c86fd9730fada3.ONNX\model.onnx")
     violence = [0]
-    cap = cv2.VideoCapture(0)
-    success = True
-    
+    cap = cv2.VideoCapture(r"D:\Mumuji\Desktop\archive\AI testing video.mp4")
+    success,frame = cap.read()
+
     while cap.isOpened() and success:
         success,frame = cap.read()
         outs = model.predict(model.from_cv2(frame))
         violence.append(outs["loss"][0]['Violence'])
         prob = outs["loss"][0]['Violence']
-        frame = cv2.putText(frame,f"{(sum(violence)/len(violence))*100}%", (10,15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255),2)
+        frame = cv2.putText(frame,f"{(sum(violence)/len(violence))*100}%", (30,50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255,255,255),3)
         #print(sum(violence)/len(violence))
         cv2.imshow("frame",frame)
         if len(violence)>=3:
@@ -76,10 +76,8 @@ def main():
         os.system('cls' if os.name == 'nt' else 'clear')
         
         if cv2.waitKey(1) & 0xFF==113:
-                break
+            break
         
-
-
 if __name__ == '__main__':
     main()
 
