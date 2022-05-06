@@ -52,7 +52,7 @@ def main():
     
     model = Model(rf"{os.getcwd()}\490fadb34c604b9089c86fd9730fada3.ONNX\model.onnx")
     violence = [0]
-    cap = cv2.VideoCapture(r"D:\Mumuji\Desktop\archive\AI testing video.mp4")
+    cap = cv2.VideoCapture(0)
     success,frame = cap.read()
 
     while cap.isOpened() and success:
