@@ -1,4 +1,3 @@
-from multiprocessing.dummy import freeze_support
 import cv2
 import playsound
 from threading import Thread
@@ -6,11 +5,9 @@ import numpy as np
 import onnx
 import onnxruntime
 from PIL import Image
-from multiprocessing import Pool
 import multiprocessing
 import os
 import time
-pool = Pool(4)
 class Model:
     def __init__(self, model_filepath):
         self.session = onnxruntime.InferenceSession(str(model_filepath),providers=['TensorrtExecutionProvider', 'CUDAExecutionProvider', 'CPUExecutionProvider'] )
@@ -45,46 +42,23 @@ class Model:
         outputs = self.session.run(self.output_names, {self.input_name: input_array.astype(self.input_type)})
         return {name: outputs[i] for i, name in enumerate(self.output_names)}
 
-
-
-
 def main():
-    start = True
-    outs = ''
-    a = True
-    
     model = Model(rf"{os.getcwd()}\490fadb34c604b9089c86fd9730fada3.ONNX\model.onnx")
-    violence = [0]
-    cap = cv2.VideoCapture(0)
-    success,frame = cap.read()
 
-    while cap.isOpened() and success:
-        success,frame = cap.read()
-        outs = model.predict(model.from_cv2(frame))
-        violence.append(outs["loss"][0]['Violence'])
-        prob = outs["loss"][0]['Violence']
-        frame = cv2.putText(frame,f"{(sum(violence)/len(violence))*100}%", (30,50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255,255,255),3)
-        #print(sum(violence)/len(violence))
-        cv2.imshow("frame",frame)
-        if len(violence)>=3:
-            violence = [prob] 
-        #print(len(violence))
-        if (sum(violence)/len(violence)) >= 0.6 :
-            print("Violence Detected.")
-            if a:
-                pool.map(playsound.playsound,(fr"{os.getcwd()}\alert sound_short.wav",))
-                #multiprocessing.Process(target = playsound.playsound, args = (fr"{os.getcwd()}\alert sound_short.wav",)).start()
-            a = not a
-            #cv2.imwrite(f"detected_{time.time()}.png",frame) 
-            
-        os.system('cls' if os.name == 'nt' else 'clear')
-        
-        if cv2.waitKey(1) & 0xFF==113:
-            break
-        
-if __name__ == '__main__':
-    freeze_support()
+    frame = cv2.imread(r"C:\Users\Mumuji\Pictures\Camera Roll\WIN_20220511_14_50_32_Pro.jpg")
+    print(frame)
+    violence = []
+    outs = model.predict(model.from_cv2(frame))
+    cv2.imshow("cheesiest",frame)
+    prob = outs["loss"][0]['Violence']
+    print(type(prob))
+    
+    frame = cv2.putText(frame,f"{(prob)*100}%", (30,50), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255,255,255),3)
+    #print(sum(violence)/len(violence))
+    cv2.imshow("frame",frame)
+    cv2.imwrite("outest.png",frame)
+    cv2.waitKey()
+    
+    
+if __name__ == "__main__":
     main()
-
-
-
